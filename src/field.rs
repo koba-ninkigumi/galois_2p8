@@ -1067,6 +1067,19 @@ impl PrimitivePolynomialField {
             None => panic!("Polynomial {:?} is not primitive")
         }
     }
+    pub fn pow(&self, base: u8, exp: u8) -> u8 {
+        if base == 0 {
+            if exp == 0 { 1 } else { 0 }
+        } else if exp == 0 {
+            1
+        } else {
+            unsafe {
+                let log_base = *self.plog_table.offset(base as isize) as u16;
+                let result_log = (log_base * exp as u16) % 255;
+                *self.pexp_table.offset(result_log as isize)
+            }
+        }
+    }
 }
 
 impl Field for PrimitivePolynomialField {
